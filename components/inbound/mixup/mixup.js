@@ -7,7 +7,7 @@ class CentroAtencionMixup extends HTMLElement {
 
         // Contenido HTML del Web Component con el sidebar incluido
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="mi-widget.css">
+        <link rel="stylesheet" href="mixup.css">
         <link rel="stylesheet" href="../css/neo/neon.css">
         <div class="widget-layout">
             <!-- Contenido principal del Web Component -->

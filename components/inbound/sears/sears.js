@@ -5,16 +5,24 @@ class CentroAtencionTelefonica extends HTMLElement {
         // Creamos el Shadow DOM
         this.attachShadow({ mode: 'open' });
 
+        // Extraer los parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const cuenta = params.get('cuenta') || 'No especificada';
+        const tarjeta = params.get('tarjeta') || 'No especificada';
+        const motivo = params.get('motivo') || 'No especificado';
+        const nombre = params.get('nombre') || 'Cliente';
+        const telefono = params.get('telefono') || 'No especificado';
+
         // Contenido HTML del Web Component con el sidebar incluido
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="mi-widget.css">
+        <link rel="stylesheet" href="sears.css">
         <link rel="stylesheet" href="../../../css/neo/neon.css">
         <div class="widget-layout">
             <!-- Contenido principal del Web Component -->
             <div class="neo-container container">
                 <h5>Centro de Atención Telefónica SEARS.</h5>
                 <p><span class="customer-info">Buenas Tardes, le atiende: <b>ABIGAIL NAJERA</b>.</span></p>
-                <p>¿Tengo el gusto con el Sr./Sra. <b>FORTUNATA ANA LOPEZ ACEVEDO</b>? ¿En qué puedo servirle?</p>
+                <p>¿Tengo el gusto con el Sr./Sra. <b>${nombre}</b>? ¿En qué puedo servirle?</p>
 
                 <!-- Formulario de motivos -->
                 <div class="formrow">
@@ -100,14 +108,14 @@ class CentroAtencionTelefonica extends HTMLElement {
                     <!-- Información básica -->
                     <div class="sidebar-header">
                         <h5>CEAT: SEARS 📞</h5>
-                        <p class="text-danger">MOTIVO: SOLICITA AYUDA CLIENTE - 5521382726</p>
-                        <p>Cuenta: 70-6925172225</p>
+                        <p class="text-danger">MOTIVO: ${motivo} - ${telefono}</p>
+                        <p>Cuenta: ${cuenta}</p>
                     </div>
                     <!-- Tarjeta e icono -->
                     <div class="sidebar-card">
                         <p>Tarjeta:</p>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" value="706927761553" aria-label="Tarjeta" disabled>
+                            <input type="text" class="form-control" value="${tarjeta}" aria-label="Tarjeta" disabled>
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">💳</button>
                             </div>
@@ -128,18 +136,32 @@ class CentroAtencionTelefonica extends HTMLElement {
         this.setupDropdownLogic();
     }
 
+    // Función para mantener los parámetros en la redirección
+    redirectWithParams(targetUrl) {
+        const params = new URLSearchParams(window.location.search); // Obtener los parámetros de la URL actual
+        const fullUrl = `${targetUrl}?${params.toString()}`; // Concatenar la nueva URL con los parámetros
+        window.location.href = fullUrl; // Redirigir a la nueva URL
+    }
+
     setupDropdownLogic() {
         // Definir las opciones de servicios para cada grupo
         const servicios = {
-            "ACLARACIÓN": ["Bonificación de CXF", "Fraudes", "Cheques Devueltos", "Traspaso de Pago", "Pagos Internet"],
-            "CAJEROS SEARS": ["DUDAS Y/O COMENTARIOS", "EFECTIVO RETENIDO", "RECHAZO DE RETIRO", "TARJETA RETENIDA"],
-            "LINEA DE CRÉDITO": ["Consulta de Saldo", "Traspaso CR a Reserva"],
+            "ACLARACIÓN": [
+                "Bonificación de CXF", "Fraudes", "Cheques Devueltos", "Traspaso de Pago", "Pagos Internet"
+            ],
+            "CAJEROS SEARS": [
+                "DUDAS Y/O COMENTARIOS", "EFECTIVO RETENIDO", "RECHAZO DE RETIRO", "TARJETA RETENIDA"
+            ],
+            "LINEA DE CRÉDITO": [
+                "Consulta de Saldo", "Traspaso CR a Reserva"
+            ],
             "SERVICIO": [
                 "Transferencia a Aprobaciones", "Activación de NIP", "Cambios Demográficos", "Cancelación de Adicional",
                 "Cancelación de Cuenta", "Carta Referencia", "Cliente RIP", "Directorio de tiendas",
                 "Envío de Estados de Cuenta", "Envío de Placa", "Problemas Internet", "Queja de Servicio Tienda",
-                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada", "Transferencia (Conmutador o algún Agente)",
-                "Transferencia a Cobranza", "Transferencia a Promociones", "Transferencias a Seguros", "Viajes Sears"
+                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada", 
+                "Transferencia a Cobranza", "Transferencia a Promociones", "Transferencias a Seguros", 
+                "Transferencia (Conmutador o algún Agente)", "Viajes Sears"
             ]
         };
 
