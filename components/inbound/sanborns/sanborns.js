@@ -41,7 +41,7 @@ class CentroAtencionSanborns extends HTMLElement {
                             <!-- Las opciones se llenarán dinámicamente con JavaScript -->
                         </select>
                     </div>
-                    <button class="btn custom-primary">Agregar</button>
+                    <button id="agregar-btn" class="btn custom-primary">Agregar</button>
                 </div>
 
                 <!-- Tabla de Motivos de Contacto -->
@@ -55,8 +55,8 @@ class CentroAtencionSanborns extends HTMLElement {
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="motivos-body">
+                            <tr id="no-info-row">
                                 <td colspan="3">Sin Información</td>
                             </tr>
                         </tbody>
@@ -134,6 +134,51 @@ class CentroAtencionSanborns extends HTMLElement {
 
         // Llamamos a los métodos después de que el HTML ha sido renderizado
         this.setupDropdownLogic();
+        this.setupAddButton();
+    }
+
+    // Función para manejar la lógica del botón "Agregar"
+    setupAddButton() {
+        const addButton = this.shadowRoot.getElementById('agregar-btn');
+        const grupoSelect = this.shadowRoot.getElementById('grupo');
+        const servicioSelect = this.shadowRoot.getElementById('servicio');
+        const motivosBody = this.shadowRoot.getElementById('motivos-body');
+        const noInfoRow = this.shadowRoot.getElementById('no-info-row');
+
+        addButton.addEventListener('click', () => {
+            const grupo = grupoSelect.value;
+            const servicio = servicioSelect.value;
+
+            // Eliminar la fila "Sin Información" si es necesario
+            if (noInfoRow) {
+                noInfoRow.remove();
+            }
+
+            // Crear una nueva fila en la tabla
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${grupo}</td>
+                <td>${servicio}</td>
+                <td><button class="btn btn-danger btn-sm eliminar-btn">Eliminar</button></td>
+            `;
+
+            // Añadir la nueva fila a la tabla de motivos
+            motivosBody.appendChild(newRow);
+
+            // Agregar funcionalidad al botón "Eliminar"
+            const eliminarBtn = newRow.querySelector('.eliminar-btn');
+            eliminarBtn.addEventListener('click', () => {
+                newRow.remove();
+
+                // Si no hay más filas en la tabla, mostrar el mensaje "Sin Información"
+                if (motivosBody.children.length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.id = 'no-info-row';
+                    emptyRow.innerHTML = `<td colspan="3">Sin Información</td>`;
+                    motivosBody.appendChild(emptyRow);
+                }
+            });
+        });
     }
 
     // Lógica para actualizar el dropdown de servicios
@@ -146,8 +191,9 @@ class CentroAtencionSanborns extends HTMLElement {
                 "Transferencia a Aprobaciones", "Activación de NIP", "Cambios Demográficos", "Cancelación de Adicional",
                 "Cancelación de Cuenta", "Carta Referencia", "Cliente RIP", "Directorio de tiendas",
                 "Envío de Estados de Cuenta", "Envío de Placa", "Problemas Internet", "Queja de Servicio Tienda",
-                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada", "Transferencia (Conmutador o algún Agente)",
-                "Transferencia a Cobranza", "Transferencia a Promociones", "Transferencias a Seguros", "Viajes Sears"
+                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada",
+                "Transferencia (Conmutador o algún Agente)", "Transferencia a Cobranza", "Transferencia a Promociones",
+                "Transferencias a Seguros", "Viajes Sears"
             ]
         };
 

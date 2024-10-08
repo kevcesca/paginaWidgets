@@ -2,6 +2,14 @@ class CentroAtencionSears extends HTMLElement {
     constructor() {
         super();
 
+        // Extraer los parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const cuenta = params.get('cuenta') || 'No especificada';
+        const tarjeta = params.get('tarjeta') || 'No especificada';
+        const motivo = params.get('motivo') || 'No especificado';
+        const nombre = params.get('nombre') || 'Cliente';
+        const telefono = params.get('telefono') || 'No especificado';
+
         // Creamos el Shadow DOM
         this.attachShadow({ mode: 'open' });
 
@@ -14,7 +22,7 @@ class CentroAtencionSears extends HTMLElement {
             <div class="neo-container container">
                 <h5>Centro de Atención Telefónica SEARS.</h5>
                 <p><span class="customer-info">Buenas Tardes, le atiende: <b>ABIGAIL NAJERA</b>.</span></p>
-                <p>¿En qué puedo servirle?</p>
+                <p>¿Tengo el gusto con el Sr./Sra. <b>${nombre}</b>? ¿En qué puedo servirle?</p>
 
                 <!-- Formulario de motivos -->
                 <div class="formrow">
@@ -51,7 +59,7 @@ class CentroAtencionSears extends HTMLElement {
                             <option>Transferencias a Seguros</option>
                         </select>
                     </div>
-                    <button class="btn custom-primary">Agregar</button>
+                    <button id="agregar-btn" class="btn custom-primary">Agregar</button>
                 </div>
 
                 <!-- Tabla de Motivos de Contacto -->
@@ -65,8 +73,8 @@ class CentroAtencionSears extends HTMLElement {
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="motivos-body">
+                            <tr id="no-info-row">
                                 <td colspan="3">Sin Información</td>
                             </tr>
                         </tbody>
@@ -118,14 +126,14 @@ class CentroAtencionSears extends HTMLElement {
                     <!-- Información básica -->
                     <div class="sidebar-header">
                         <h5>CEAT: SEARS 📞</h5>
-                        <p class="text-danger">MOTIVO: SOLICITA AYUDA CLIENTE - 5521382726</p>
-                        <p>Cuenta: 70-6925172225</p>
+                        <p class="text-danger">MOTIVO: ${motivo} - ${telefono}</p>
+                        <p>Cuenta: ${cuenta}</p>
                     </div>
                     <!-- Tarjeta e icono -->
                     <div class="sidebar-card">
                         <p>Tarjeta:</p>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" value="706927761553" aria-label="Tarjeta" disabled>
+                            <input type="text" class="form-control" value="${tarjeta}" aria-label="Tarjeta" disabled>
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">💳</button>
                             </div>
@@ -144,17 +152,63 @@ class CentroAtencionSears extends HTMLElement {
 
         // Llamamos a los métodos después de que el HTML ha sido renderizado
         this.setupDropdownLogic();
+        this.setupAddButton();
+    }
+
+    // Función para manejar la lógica del botón "Agregar"
+    setupAddButton() {
+        const addButton = this.shadowRoot.querySelector('#agregar-btn');
+        const grupoSelect = this.shadowRoot.getElementById('grupo');
+        const servicioSelect = this.shadowRoot.getElementById('servicio');
+        const motivosBody = this.shadowRoot.getElementById('motivos-body');
+        const noInfoRow = this.shadowRoot.getElementById('no-info-row');
+
+        addButton.addEventListener('click', () => {
+            const grupo = grupoSelect.value;
+            const servicio = servicioSelect.value;
+
+            // Eliminar la fila "Sin Información" si es necesario
+            if (noInfoRow) {
+                noInfoRow.remove();
+            }
+
+            // Crear una nueva fila en la tabla
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${grupo}</td>
+                <td>${servicio}</td>
+                <td><button class="btn btn-danger btn-sm eliminar-btn">Eliminar</button></td>
+            `;
+
+            // Añadir la nueva fila a la tabla de motivos
+            motivosBody.appendChild(newRow);
+
+            // Agregar funcionalidad al botón "Eliminar"
+            const eliminarBtn = newRow.querySelector('.eliminar-btn');
+            eliminarBtn.addEventListener('click', () => {
+                newRow.remove();
+
+                // Si no hay más filas en la tabla, mostrar el mensaje "Sin Información"
+                if (motivosBody.children.length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.id = 'no-info-row';
+                    emptyRow.innerHTML = `<td colspan="3">Sin Información</td>`;
+                    motivosBody.appendChild(emptyRow);
+                }
+            });
+        });
     }
 
     // Lógica para actualizar el dropdown de servicios
     setupDropdownLogic() {
         const servicios = {
-            'SERVICIO': [
+            "SERVICIO": [
                 "Transferencia a Aprobaciones", "Activación de NIP", "Cambios Demográficos", "Cancelación de Adicional",
                 "Cancelación de Cuenta", "Carta Referencia", "Cliente RIP", "Directorio de tiendas",
                 "Envío de Estados de Cuenta", "Envío de Placa", "Problemas Internet", "Queja de Servicio Tienda",
-                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada",
-                "Transferencia a Cobranza", "Transferencia a Promociones", "Transferencias a Seguros"
+                "Registro de Adicional", "Reporte de Estados de Cuenta", "Status de Solicitud", "Tarjeta Robada", 
+                "Transferencia a Cobranza", "Transferencia a Promociones", "Transferencias a Seguros", 
+                "Transferencia (Conmutador o algún Agente)", "Viajes Sears"
             ],
             'ACLARACIÓN': [
                 "Bonificación de CXF", "Fraudes", "Cheques Devueltos", "Traspaso de Pago", "Traspaso de Venta", "Pagos Internet"

@@ -33,6 +33,13 @@
     border-collapse: collapse;
 }
 
+.eliminar-btn{
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+    padding: .2rem;
+}
+
 .table-motivos thead th {
     background-color: #f0f0f0; /* Color gris igual que la tabla de tiendas */
     padding: 12px;

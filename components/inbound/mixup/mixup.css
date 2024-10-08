@@ -206,6 +206,13 @@
     padding-left: 15px;
 }
 
+.eliminar-btn{
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+    padding: .2rem;
+}
+
 .sidebar-buttons .btn-warning {
     background-color: #ffc107;
     border-color: #ffc107;

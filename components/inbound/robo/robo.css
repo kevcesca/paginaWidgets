@@ -82,6 +82,13 @@
     margin-right: 10px;
 }
 
+.eliminar-btn{
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+    padding: .2rem;
+}
+
 /* Colores personalizados para los botones */
 .neo-button.btn-primary {
     background-color: #17a2b8 !important;
