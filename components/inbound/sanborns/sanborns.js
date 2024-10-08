@@ -2,6 +2,14 @@ class CentroAtencionSanborns extends HTMLElement {
     constructor() {
         super();
 
+        // Extraer los parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const cuenta = params.get('cuenta') || 'No especificada';
+        const tarjeta = params.get('tarjeta') || 'No especificada';
+        const motivo = params.get('motivo') || 'No especificado';
+        const nombre = params.get('nombre') || 'Cliente';
+        const telefono = params.get('telefono') || 'No especificado';
+
         // Creamos el Shadow DOM
         this.attachShadow({ mode: 'open' });
 
@@ -14,7 +22,7 @@ class CentroAtencionSanborns extends HTMLElement {
             <div class="neo-container container">
                 <h5>Centro de Atención Telefónica SANBORNS.</h5>
                 <p><span class="customer-info">Buenas Tardes, le atiende: <b>ABIGAIL NAJERA</b>.</span></p>
-                <p>¿Tengo el gusto con el Sr./Sra. <b>LAURA ELENA CARRILLO CRUZ</b>? ¿En qué puedo servirle?</p>
+                <p>¿Tengo el gusto con el Sr./Sra. <b>${nombre}</b>? ¿En qué puedo servirle?</p>
 
                 <!-- Formulario de motivos -->
                 <div class="formrow">
@@ -100,14 +108,14 @@ class CentroAtencionSanborns extends HTMLElement {
                     <!-- Información básica -->
                     <div class="sidebar-header">
                         <h5>CEAT: SANBORNS 📞</h5>
-                        <p class="text-danger">MOTIVO: SOLICITA AYUDA CLIENTE - 5521382726</p>
-                        <p>Cuenta: 70-6925172225</p>
+                        <p class="text-danger">MOTIVO: ${motivo} - ${telefono}</p>
+                        <p>Cuenta: ${cuenta}</p>
                     </div>
                     <!-- Tarjeta e icono -->
                     <div class="sidebar-card">
                         <p>Tarjeta:</p>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" value="706927761553" aria-label="Tarjeta" disabled>
+                            <input type="text" class="form-control" value="${tarjeta}" aria-label="Tarjeta" disabled>
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">💳</button>
                             </div>
@@ -124,7 +132,7 @@ class CentroAtencionSanborns extends HTMLElement {
         </div>
         `;
 
-        // Lógica de los dropdowns
+        // Llamamos a los métodos después de que el HTML ha sido renderizado
         this.setupDropdownLogic();
     }
 
