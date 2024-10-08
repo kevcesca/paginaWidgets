@@ -41,7 +41,7 @@ class CentroAtencionTelefonica extends HTMLElement {
                             <!-- Las opciones se llenarán dinámicamente con JavaScript -->
                         </select>
                     </div>
-                    <button id="agregar-btn" class="btn custom-primary">Agregar</button>
+                    <button class="btn custom-primary">Agregar</button>
                 </div>
 
                 <!-- Tabla de Motivos de Contacto -->
@@ -55,8 +55,8 @@ class CentroAtencionTelefonica extends HTMLElement {
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
-                        <tbody id="motivos-body">
-                            <tr id="no-info-row">
+                        <tbody>
+                            <tr>
                                 <td colspan="3">Sin Información</td>
                             </tr>
                         </tbody>
@@ -134,55 +134,17 @@ class CentroAtencionTelefonica extends HTMLElement {
 
         // Llamamos a los métodos después de que el HTML ha sido renderizado
         this.setupDropdownLogic();
-        this.setupAddButton();
     }
 
-    // Función para manejar la lógica del botón "Agregar"
-    setupAddButton() {
-        const addButton = this.shadowRoot.getElementById('agregar-btn');
-        const grupoSelect = this.shadowRoot.getElementById('grupo');
-        const servicioSelect = this.shadowRoot.getElementById('servicio');
-        const motivosBody = this.shadowRoot.getElementById('motivos-body');
-        const noInfoRow = this.shadowRoot.getElementById('no-info-row');
-
-        addButton.addEventListener('click', () => {
-            const grupo = grupoSelect.value;
-            const servicio = servicioSelect.value;
-
-            // Eliminar la fila "Sin Información" si es necesario
-            if (noInfoRow) {
-                noInfoRow.remove();
-            }
-
-            // Crear una nueva fila en la tabla
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${grupo}</td>
-                <td>${servicio}</td>
-                <td><button class="btn btn-danger btn-sm eliminar-btn">Eliminar</button></td>
-            `;
-
-            // Añadir la nueva fila a la tabla de motivos
-            motivosBody.appendChild(newRow);
-
-            // Agregar funcionalidad al botón "Eliminar"
-            const eliminarBtn = newRow.querySelector('.eliminar-btn');
-            eliminarBtn.addEventListener('click', () => {
-                newRow.remove();
-
-                // Si no hay más filas en la tabla, mostrar el mensaje "Sin Información"
-                if (motivosBody.children.length === 0) {
-                    const emptyRow = document.createElement('tr');
-                    emptyRow.id = 'no-info-row';
-                    emptyRow.innerHTML = `<td colspan="3">Sin Información</td>`;
-                    motivosBody.appendChild(emptyRow);
-                }
-            });
-        });
+    // Función para mantener los parámetros en la redirección
+    redirectWithParams(targetUrl) {
+        const params = new URLSearchParams(window.location.search); // Obtener los parámetros de la URL actual
+        const fullUrl = `${targetUrl}?${params.toString()}`; // Concatenar la nueva URL con los parámetros
+        window.location.href = fullUrl; // Redirigir a la nueva URL
     }
 
-    // Lógica para actualizar el dropdown de servicios
     setupDropdownLogic() {
+        // Definir las opciones de servicios para cada grupo
         const servicios = {
             "ACLARACIÓN": [
                 "Bonificación de CXF", "Fraudes", "Cheques Devueltos", "Traspaso de Pago", "Pagos Internet"
@@ -203,22 +165,30 @@ class CentroAtencionTelefonica extends HTMLElement {
             ]
         };
 
-        const grupoSelect = this.shadowRoot.getElementById('grupo');
-        const servicioSelect = this.shadowRoot.getElementById('servicio');
+        // Referencias a los elementos del Shadow DOM
+        const grupoSelect = this.shadowRoot.getElementById("grupo");
+        const servicioSelect = this.shadowRoot.getElementById("servicio");
 
+        // Función para actualizar las opciones del segundo dropdown
         const updateServicios = () => {
             const selectedGrupo = grupoSelect.value;
+
+            // Limpiar las opciones actuales del servicio
             servicioSelect.innerHTML = "";
 
+            // Agregar las nuevas opciones
             servicios[selectedGrupo].forEach(function(servicio) {
-                const option = document.createElement('option');
+                const option = document.createElement("option");
                 option.text = servicio;
                 option.value = servicio;
                 servicioSelect.add(option);
             });
         };
 
-        grupoSelect.addEventListener('change', updateServicios);
+        // Evento para cambiar el grupo
+        grupoSelect.addEventListener("change", updateServicios);
+
+        // Inicializa la lista de servicios la primera vez
         updateServicios();
     }
 }
