@@ -1,5 +1,3 @@
-# Proyecto: Generación de Estados de Cuenta - Campañas Inbound
-
 ## Versión: 0.5.0
 
 ### Descripción del Proyecto
